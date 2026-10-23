@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kinetic Typography · Live Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0a0a0a;
+    --white:#ffffff;
+    --line:#0a0a0a;
+    --grey:#595959;
+    --grey-soft:#8a8a8a;
+    --paper:#fbfbf9;
+    --focus:#1a56ff;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+  }
+  body{
+    font-family:'DM Sans', sans-serif;
+    background:var(--paper);
+    color:var(--black);
+    font-weight:400;
+    line-height:1.55;
+    font-size:15px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'Roboto Mono', monospace;}
+  a{color:inherit; text-decoration:none;}
+  ::selection{background:var(--black); color:var(--white);}
+  img{max-width:100%; display:block;}
+  a:focus-visible, button:focus-visible, input:focus-visible, canvas:focus-visible{outline:2px solid var(--focus); outline-offset:2px;}
+  strong{font-weight:500;}
+
+  .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0;}
+  .inline-link{border-bottom:1px solid var(--line);}
+  .mt-14{margin-top:14px;}
+  .mt-16{margin-top:16px;}
+  .mt-32{margin-top:32px;}
+
+  /* Placeholder for facts still to be filled in */
+  .todo{font-family:'Roboto Mono',monospace; font-size:0.85em; color:var(--grey); border-bottom:1px dashed var(--grey-soft);}
+
+  .skip-link{position:absolute; left:-999px; top:auto; background:var(--black); color:var(--white); padding:10px 16px; z-index:100; font-family:'Roboto Mono',monospace; font-size:13px;}
+  .skip-link:focus{left:16px; top:16px;}
+
+  .wrap{max-width:1200px; margin:0 auto; padding:0 24px;}
+  svg.icon{width:26px; height:26px; stroke:currentColor; fill:none; stroke-width:1.3; stroke-linecap:round; stroke-linejoin:round;}
+
+  header.top{ border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--paper); z-index:50; }
+  .top-inner{ display:flex; justify-content:space-between; align-items:center; padding:18px 24px; max-width:1200px; margin:0 auto; text-transform:uppercase; letter-spacing:0.08em; font-size:12px; font-family:'Roboto Mono', monospace; }
+  .top-inner nav{display:flex; gap:28px;}
+  .top-inner nav a{position:relative; padding-bottom:2px;}
+  .top-inner nav a:focus-visible{border-bottom:1px solid var(--black);}
+  .top-inner .back{color:var(--grey);}
+
+  .hero{ border-bottom:1px solid var(--line); padding:56px 24px 40px; }
+  .hero-inner{max-width:1200px; margin:0 auto;}
+  .hero .meta{font-family:'Roboto Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--grey); margin-bottom:16px;}
+  .hero h1{ font-size:clamp(26px, 3.6vw, 42px); font-weight:500; letter-spacing:-0.01em; line-height:1.15; max-width:22ch; }
+  .hero .sub{max-width:62ch; font-size:14.5px; color:var(--black); margin-top:16px; line-height:1.6;}
+
+  .factrow{ display:grid; grid-template-columns:repeat(5,1fr); border-top:1px solid var(--line); margin-top:28px; }
+  .fact{ padding:16px 24px 18px 24px; border-right:1px solid var(--line); }
+  .fact:first-child{padding-left:0;}
+  .fact:last-child{border-right:none; padding-right:0;}
+  .fact .flabel{font-family:'Roboto Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--grey); margin-bottom:8px;}
+  .fact .fval{font-size:14px;}
+
+  /* Glance tiles */
+  .glance-tiles{ display:grid; grid-template-columns:repeat(2,1fr); border:1px solid var(--line); margin-top:28px; }
+  a.gt{ border-right:1px solid var(--line); border-bottom:1px solid var(--line); padding:22px; display:flex; flex-direction:column; min-height:140px; color:var(--black); transition:background .12s linear, color .12s linear; }
+  a.gt:nth-child(2n){ border-right:none; }
+  a.gt:nth-child(n+3){ border-bottom:none; }
+  a.gt .gt-label{ font-family:'Roboto Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--black); font-weight:500; margin-bottom:12px; }
+  a.gt .gt-text{ font-size:15.5px; line-height:1.5; }
+  a.gt .gt-stat{ font-family:'Roboto Mono',monospace; font-size:40px; font-weight:500; line-height:1; letter-spacing:-0.01em; margin-bottom:8px; }
+  a.gt:focus-visible{ background:var(--black); color:var(--white); }
+  a.gt:focus-visible .gt-label{ color:var(--grey-soft); }
+  @media (max-width:640px){
+    .glance-tiles{ grid-template-columns:1fr; }
+    a.gt{ border-right:none; }
+    a.gt:nth-child(n){ border-bottom:1px solid var(--line); }
+    a.gt:last-child{ border-bottom:none; }
+  }
+
+  .section-label{ padding:14px 24px; border-bottom:1px solid var(--line); text-transform:uppercase; letter-spacing:0.08em; font-size:12px; color:var(--grey); font-family:'Roboto Mono',monospace; display:flex; justify-content:space-between; max-width:1200px; margin:0 auto; }
+
+  .block{ padding:40px 24px; border-bottom:1px solid var(--line); }
+  .block-inner{max-width:1200px; margin:0 auto;}
+  .block h2{font-size:22px; font-weight:500; max-width:26ch; margin-bottom:16px;}
+  .block > .block-inner > p{max-width:64ch; margin-bottom:14px; color:var(--black); font-size:14px;}
+
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:40px;}
+
+  /* Static info card */
+  .unit{ border-right:1px solid var(--line); border-bottom:1px solid var(--line); padding:20px; position:relative; display:flex; flex-direction:column; }
+  .unit .u-icon{margin-bottom:14px; color:var(--black);}
+  .unit .u-num{font-family:'Roboto Mono',monospace; font-size:11px; color:var(--grey); position:absolute; top:20px; right:20px;}
+  .unit .u-title{font-size:15px; font-weight:500; line-height:1.3; padding-right:26px;}
+  .unit .u-tag{font-family:'Roboto Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--grey); margin-top:6px;}
+  .unit .u-body{font-size:13px; color:var(--black); margin-top:10px;}
+  .unit .u-body p{margin-bottom:0;}
+  .unit .r-label{font-family:'Roboto Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.06em; color:var(--grey-soft); display:block; margin-top:10px; margin-bottom:4px;}
+  .unit .r-rec{font-size:13px; color:var(--black);}
+
+  .problem-list{list-style:none; padding:0; margin-top:18px; display:grid; grid-template-columns:1fr 1fr; gap:10px 32px; max-width:900px;}
+  .problem-list li{font-size:14px; padding-left:18px; position:relative; line-height:1.45;}
+  .problem-list li::before{content:"–"; position:absolute; left:0; color:var(--grey);}
+
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--line); border-left:1px solid var(--line);}
+  .grid-2{display:grid; grid-template-columns:repeat(2,1fr); border-top:1px solid var(--line); border-left:1px solid var(--line);}
+
+  .screener{ display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid var(--line); border-left:1px solid var(--line); margin-top:8px; }
+  .sitem{ border-right:1px solid var(--line); border-bottom:1px solid var(--line); padding:18px 16px; }
+  .sitem .snum{font-size:24px; font-weight:500; font-family:'Roboto Mono',monospace;}
+  .sitem .slabel{font-size:11px; color:var(--grey); margin-top:4px; text-transform:uppercase; letter-spacing:0.05em; font-family:'Roboto Mono',monospace;}
+  .screener-note{font-size:13px; color:var(--grey); max-width:52ch;}
+
+  .embed-label{font-family:'Roboto Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:0.06em; color:var(--grey); margin-bottom:10px;}
+
+  .analysis-panel{ border:1px solid var(--line); padding:28px; margin-top:20px; }
+  .analysis-panel .aplabel{font-family:'Roboto Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--grey); margin-bottom:10px;}
+  .analysis-panel p{max-width:70ch; font-size:14px;}
+
+  .limits{border-top:1px solid var(--line); border-left:1px solid var(--line); display:grid; grid-template-columns:repeat(3,1fr);}
+  .limit{border-right:1px solid var(--line); border-bottom:1px solid var(--line); padding:20px;}
+  .limit .lnum{font-family:'Roboto Mono',monospace; font-size:11px; color:var(--grey); margin-bottom:10px;}
+  .limit p{font-size:13.5px; color:var(--black); max-width:36ch;}
+  .reflect-close{margin-top:28px; max-width:68ch; font-size:14px; line-height:1.6;}
+
+  /* ===== Technical additions, built on the same line system ===== */
+
+  /* Architecture diagram */
+  .diagram{ border:1px solid var(--line); margin-top:20px; overflow-x:auto; background:var(--paper); }
+  .diagram svg{ display:block; width:100%; min-width:760px; height:auto; }
+  .diagram .box{ fill:var(--paper); stroke:var(--line); stroke-width:1; }
+  .diagram .box.key{ fill:var(--black); }
+  .diagram .lbl{ font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; fill:var(--black); }
+  .diagram .lbl.inv{ fill:var(--white); }
+  .diagram .sub{ font-family:'Roboto Mono',monospace; font-size:10.5px; letter-spacing:0.04em; fill:var(--grey); text-transform:uppercase; }
+  .diagram .sub.inv{ fill:var(--grey-soft); }
+  .diagram .wire{ stroke:var(--line); stroke-width:1; fill:none; }
+  .diagram .wire.net{ stroke-dasharray:4 4; }
+  .diagram .tip{ fill:var(--line); }
+  .diagram-caption{ font-family:'Roboto Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--grey); padding:12px 16px; border-top:1px solid var(--line); }
+
+  /* Signal table */
+  .table-wrap{ overflow-x:auto; border-top:1px solid var(--line); border-left:1px solid var(--line); margin-top:20px; }
+  table.spec{ border-collapse:collapse; width:100%; min-width:820px; font-size:13px; }
+  table.spec th{ font-family:'Roboto Mono',monospace; font-size:10.5px; font-weight:500; text-transform:uppercase; letter-spacing:0.06em; color:var(--grey); text-align:left; padding:12px 16px; border-right:1px solid var(--line); border-bottom:1px solid var(--line); }
+  table.spec td{ padding:14px 16px; border-right:1px solid var(--line); border-bottom:1px solid var(--line); vertical-align:top; line-height:1.45; }
+  table.spec td.m{ font-family:'Roboto Mono',monospace; font-size:12px; }
+  table.spec td:first-child{ font-weight:500; }
+
+  /* Code panel */
+  .code-panel{ border:1px solid var(--line); margin-top:20px; }
+  .code-head{ font-family:'Roboto Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--grey); padding:12px 16px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  pre.code{ font-family:'Roboto Mono',monospace; font-size:12.5px; line-height:1.65; padding:20px; overflow-x:auto; color:var(--black); }
+  pre.code .c{ color:var(--grey-soft); }
+
+  /* Live demo */
+  /* Fits under the sticky header with room to spare: never taller than the screen */
+  .demo{ display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); border:1px solid var(--line); margin-top:20px; height:clamp(440px, calc(100vh - 140px), 620px); height:clamp(440px, calc(100svh - 140px), 620px); }
+  .demo-stage{ border-right:1px solid var(--line); position:relative; perspective:900px; overflow:hidden; min-height:0; }
+  .demo-stage canvas{ width:100%; height:100%; display:block; touch-action:none; cursor:crosshair; }
+  @media (pointer: coarse){ .demo-stage canvas{ touch-action:pan-y; } }
+  .demo-controls{ display:flex; flex-direction:column; min-height:0; overflow-y:auto; }
+  .ctl{ padding:10px 20px; border-bottom:1px solid var(--line); }
+  .ctl:last-child{ border-bottom:none; flex:1; }
+  .ctl label, .ctl .ctl-label{ display:flex; justify-content:space-between; gap:12px; font-family:'Roboto Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--grey); margin-bottom:4px; }
+  .ctl .src{ color:var(--grey-soft); }
+  .ctl output{ color:var(--black); }
+    .ctl input[type=range]{ width:100%; accent-color:var(--black); height:28px; margin:0; }
+  @media (pointer: coarse){ .ctl input[type=range]{ height:40px; } }
+  .stepper{ display:flex; align-items:center; gap:10px; }
+  .step-btn{ width:40px; height:40px; border:1px solid var(--line); background:transparent; font-family:'Roboto Mono',monospace; font-size:16px; cursor:pointer; color:var(--black); }
+  .step-btn:active{ background:var(--black); color:var(--white); }
+  .stepper .letter{ min-width:1.4em; text-align:center; }
+  .pair .phone-only{ display:none; }
+  .ctl .letter{ font-family:'Roboto Mono',monospace; font-size:24px; font-weight:500; }
+
+  /* Phone pairing */
+  .pair{ display:grid; grid-template-columns:104px minmax(0,1fr); gap:16px; align-items:start; }
+  .pair .qr{ width:104px; height:104px; border:1px solid var(--line); background:var(--white); display:flex; align-items:center; justify-content:center; }
+  .pair .qr svg, .pair .qr img{ width:100%; height:100%; display:block; }
+  .pair .room{ font-family:'Roboto Mono',monospace; font-size:22px; font-weight:500; letter-spacing:0.12em; }
+  .pair .pair-text{ font-size:12.5px; color:var(--grey); margin-top:6px; }
+  .pair .pair-url{ font-family:'Roboto Mono',monospace; font-size:10.5px; color:var(--grey); word-break:break-all; margin-top:8px; display:block; }
+  .status{ display:flex; align-items:center; gap:8px; font-family:'Roboto Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; margin-top:12px; }
+  .status .dot{ width:8px; height:8px; border:1px solid var(--line); background:transparent; flex:none; }
+  .status[data-state="live"] .dot{ background:var(--black); }
+  .status[data-state="error"] .dot{ background:transparent; border-style:dashed; }
+  .ctl.paired-hint{ font-size:12.5px; color:var(--grey); }
+  @media (max-width:560px){ .pair{ grid-template-columns:1fr; } }
+  @media (hover: none) and (pointer: coarse) and (max-width: 760px){
+    .pair .qr, .pair .pair-url, .pair .desk-only{ display:none; }
+    .pair .phone-only{ display:block; margin-top:0; }
+    /* phone visitors can't pair with themselves: shrink the panel to a one-line hint + status */
+    .pair{ display:block; }
+    .pair .room, .demo-controls .ctl:first-child .ctl-label{ display:none; }
+    .status{ display:none; }
+    .demo-controls .ctl:first-child{ padding-top:12px; padding-bottom:12px; }
+  }
+  @media (max-width:560px){
+    .ctl .src{ display:none; }
+    .ctl{ padding:10px 16px; }
+    .ctl input[type=range]{ height:32px; }
+    /* letter: label and stepper on one row */
+    .demo-controls .ctl:last-child{ display:flex; align-items:center; justify-content:space-between; }
+    .demo-controls .ctl:last-child .ctl-label{ margin:0; }
+    /* tighter sticky header */
+    header.top .top-inner{ padding:10px 20px 8px; gap:2px 16px; }
+    header.top .top-inner nav{ height:30px; align-items:center; }
+    header.top .top-inner nav a{ padding:6px 2px; }
+  }
+
+  /* Bug log */
+  .buglog .unit .u-title{ font-family:'Roboto Mono',monospace; font-size:13px; font-weight:500; }
+
+  .media-slot{ border:1px dashed var(--grey-soft); aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; text-align:center; padding:20px; font-family:'Roboto Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--grey); }
+
+  footer{padding:56px 24px 40px;}
+  .footer-inner{max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:20px;}
+  footer .big{font-size:clamp(22px,3vw,34px); font-weight:500; max-width:18ch; line-height:1.2;}
+  footer .links{display:flex; flex-direction:column; gap:6px; font-family:'Roboto Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:0.05em;}
+  footer .links a{border-bottom:1px solid transparent;}
+  footer .links a:focus-visible{border-bottom:1px solid var(--black);}
+
+  /* Hover only on devices with a real hover pointer, so taps never leave a stuck state */
+  @media (hover: hover) and (pointer: fine){
+    .top-inner nav a:hover{border-bottom:1px solid var(--black);}
+    .top-inner .back:hover{color:var(--black);}
+    a.gt:hover{ background:var(--black); color:var(--white); }
+    a.gt:hover .gt-label{ color:var(--grey-soft); }
+    footer .links a:hover{border-bottom:1px solid var(--black);}
+  }
+  /* Touch: brief feedback while the finger is down, nothing left behind */
+  @media (hover: none){
+    a.gt:active{ background:var(--black); color:var(--white); }
+    a.gt:active .gt-label{ color:var(--grey-soft); }
+  }
+  a, button{ touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+  .copyright{max-width:1200px; margin:36px auto 0; padding-top:16px; border-top:1px solid var(--line); font-family:'Roboto Mono',monospace; font-size:11px; color:var(--grey); text-transform:uppercase; letter-spacing:0.05em;}
+
+  @media (max-width: 900px){
+    .factrow{grid-template-columns:repeat(2,1fr);}
+    .fact{border-right:none !important; border-bottom:1px solid var(--line); padding:12px 0;}
+    .two-col{grid-template-columns:1fr; gap:24px;}
+    .screener{grid-template-columns:repeat(2,1fr);}
+    .grid-3, .grid-2, .limits{grid-template-columns:repeat(2,1fr);}
+    .demo{grid-template-columns:1fr;}
+    .demo{height:auto;}
+    .demo-stage{border-right:none; border-bottom:1px solid var(--line); height:min(100vw, 36svh);}
+    .demo-controls{display:grid; grid-template-columns:1fr 1fr; overflow:visible;}
+    .demo-controls .ctl{border-right:1px solid var(--line);}
+    .demo-controls .ctl:nth-child(odd){border-right:none;}
+    .demo-controls .ctl:first-child, .demo-controls .ctl:last-child{grid-column:1 / -1; border-right:none;}
+  }
+  @media (max-width: 720px){
+    .wrap{padding:0 20px;}
+    .top-inner{flex-wrap:wrap; gap:10px 16px; padding:14px 20px;}
+    .top-inner nav{width:100%; gap:16px; flex-wrap:nowrap; overflow-x:auto; order:3; -webkit-overflow-scrolling:touch; scrollbar-width:none;}
+    .top-inner nav::-webkit-scrollbar{display:none;}
+    .top-inner .idx{order:2;}
+    .section-label{flex-wrap:wrap; gap:4px; padding:14px 20px;}
+    .hero{padding:44px 20px 32px;}
+    .block{padding:32px 20px;}
+    footer{padding:48px 20px 32px;}
+    .analysis-panel{padding:20px;}
+    .problem-list{grid-template-columns:1fr;}
+  }
+  @media (max-width: 560px){
+    .grid-3, .grid-2, .limits{grid-template-columns:1fr;}
+    .hero h1{font-size:25px;}
+    .footer-inner{flex-direction:column; align-items:flex-start;}
+  }
+  @media (hover: none){
+    .top-inner nav a, footer .links a{padding:6px 2px; display:inline-block;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <span>Kinetic Typography</span>
+    <nav aria-label="Links">
+      <a href="https://github.com/YOUR-USERNAME/kinetic-typography">Source</a>
+      <a href="https://YOUR-PORTFOLIO/projects/kinetic-typography/">Case study</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero" aria-label="Live demo">
+  <div class="hero-inner">
+    <div class="meta">Live demo · Browser port</div>
+    <h1>Kinetic Typography</h1>
+    <p class="sub">A letter driven by a phone’s touch and compass data. Scan the code with your phone to take control over WebRTC, no app needed. Without a phone, use the sliders or drag on the letter.</p>
+    <div class="demo" id="demo">
+      <div class="demo-stage" id="stage">
+        <canvas id="glitch" tabindex="0" aria-label="Glitching letter. Drag to change tile count and wave amplitude. Type a letter to change it."></canvas>
+      </div>
+      <div class="demo-controls">
+        <div class="ctl">
+          <div class="ctl-label"><span>Play with your phone</span><span>WebRTC</span></div>
+          <div class="pair">
+            <div class="qr" id="qr" aria-label="QR code linking to the phone controller"></div>
+            <div>
+              <div class="room" id="roomCode">····</div>
+              <div class="pair-text desk-only">Scan with your phone camera, or open the controller and enter this code.</div>
+              <div class="pair-text phone-only">To play with your phone, open this page on a laptop and scan its code.</div>
+              <a class="pair-url" id="pairUrl" href="#" target="_blank" rel="noopener"></a>
+            </div>
+          </div>
+          <div class="status" id="pairStatus" data-state="wait" role="status" aria-live="polite"><span class="dot"></span><span id="pairStatusText">Starting pairing</span></div>
+        </div>
+        <div class="ctl">
+          <label for="tiles"><span>Tiles <span class="src">· Finger 1 ↔</span></span><output id="tilesOut">18</output></label>
+          <input type="range" id="tiles" min="2" max="60" value="18">
+        </div>
+        <div class="ctl">
+          <label for="amp"><span>Wave <span class="src">· Finger 1 ↕</span></span><output id="ampOut">0.05</output></label>
+          <input type="range" id="amp" min="0" max="0.15" step="0.005" value="0.05">
+        </div>
+        <div class="ctl">
+          <label for="rot"><span>Rotation <span class="src">· Finger 2</span></span><output id="rotOut">0°</output></label>
+          <input type="range" id="rot" min="-60" max="60" value="0">
+        </div>
+        <div class="ctl">
+          <label for="heading"><span>Heading <span class="src">· Compass</span></span><output id="headingOut">90°</output></label>
+          <input type="range" id="heading" min="0" max="359" value="90">
+        </div>
+        <div class="ctl">
+          <div class="ctl-label"><span>Letter <span class="src">· Keys</span></span></div>
+          <div class="stepper">
+            <button class="step-btn" id="prevLetter" aria-label="Previous letter">‹</button>
+            <div class="letter" id="letterOut">A</div>
+            <button class="step-btn" id="nextLetter" aria-label="Next letter">›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="screener-note mt-16">Made by Aman Pathak, Olli Rova and Claudio Lintunen for Techniques et savoir-faire, Digital Media Design, L’École de Design. Mentor: <a class="inline-link" href="https://vimeo.com/mickaellafontaine" target="_blank" rel="noopener">Mickael Lafontaine</a>.</p>
+  </div>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script>
+(function(){
+  /* ---------- Rendering ---------- */
+  var canvas = document.getElementById('glitch');
+  var ctx = canvas.getContext('2d');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var buffer = document.createElement('canvas');
+  var W = 0, H = 0;
+  // state = what is drawn; target = where input wants it (phone input is smoothed toward it)
+  var state  = { tiles:18, amp:0.05, rot:0, heading:90, letter:'A' };
+  var target = { tiles:18, amp:0.05, rot:0, heading:90 };
+  var t = 0, last = 0;
+
+  var els = {
+    tiles: document.getElementById('tiles'), amp: document.getElementById('amp'),
+    rot: document.getElementById('rot'), heading: document.getElementById('heading')
+  };
+  var outs = {
+    tiles: document.getElementById('tilesOut'), amp: document.getElementById('ampOut'),
+    rot: document.getElementById('rotOut'), heading: document.getElementById('headingOut'),
+    letter: document.getElementById('letterOut')
+  };
+
+  function paintBuffer(){
+    buffer.width = W; buffer.height = H;
+    var g = buffer.getContext('2d');
+    g.clearRect(0,0,W,H);
+    g.fillStyle = '#0a0a0a';
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.font = '500 ' + Math.round(Math.min(H, W*1.1)*0.8) + "px 'DM Sans', sans-serif";
+    g.fillText(state.letter, W/2, H*0.54);
+  }
+
+  function resize(){
+    var r = canvas.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = Math.max(1, Math.round(r.width*dpr));
+    H = Math.max(1, Math.round(r.height*dpr));
+    canvas.width = W; canvas.height = H;
+    paintBuffer();
+    draw();
+  }
+
+  function draw(){
+    var n = Math.max(2, Math.round(state.tiles));
+    var th = H / n;
+    ctx.clearRect(0,0,W,H);
+    for (var i = 0; i < n; i++){
+      var y = i*th;
+      var dx = state.amp * W * Math.sin(t + i*0.55);
+      ctx.drawImage(buffer, 0, y, W, th+1, dx, y, W, th+1);
+    }
+    canvas.style.transform = 'rotateY(' + state.rot.toFixed(1) + 'deg)';
+  }
+
+  // shortest way round the circle, so 359° → 1° doesn't spin backwards
+  function lerpAngle(a, b, k){ var d = ((b - a + 540) % 360) - 180; return (a + d*k + 360) % 360; }
+
+  function step(k){
+    state.tiles += (target.tiles - state.tiles) * k;
+    state.amp   += (target.amp   - state.amp)   * k;
+    state.rot   += (target.rot   - state.rot)   * k;
+    state.heading = lerpAngle(state.heading, target.heading, k);
+  }
+
+  function loop(now){
+    var dt = last ? Math.min(0.1, (now - last)/1000) : 0;
+    last = now;
+    step(0.18);
+    // heading 0–359° maps to wave speed 0.5–4 rad/s
+    t += dt * (0.5 + (state.heading/359)*3.5);
+    draw();
+    renderOutputs();
+    if (!reduce.matches) requestAnimationFrame(loop);
+  }
+
+  function renderOutputs(){
+    outs.tiles.textContent = Math.round(state.tiles);
+    outs.amp.textContent = state.amp.toFixed(3);
+    outs.rot.textContent = Math.round(state.rot) + '°';
+    outs.heading.textContent = Math.round(state.heading) + '°';
+    outs.letter.textContent = state.letter;
+  }
+
+  function syncSliders(){
+    els.tiles.value = target.tiles; els.amp.value = target.amp;
+    els.rot.value = target.rot; els.heading.value = target.heading;
+  }
+
+  function changed(fromPhone){
+    if (!fromPhone) syncSliders();
+    if (reduce.matches){ step(1); draw(); renderOutputs(); }
+  }
+
+  function setLetter(l){
+    if (!/^[A-Z]$/.test(l) || l === state.letter) return;
+    state.letter = l; paintBuffer(); draw(); renderOutputs();
+  }
+
+  ['tiles','amp','rot','heading'].forEach(function(k){
+    els[k].addEventListener('input', function(){ target[k] = +this.value; if (reduce.matches){ step(1); draw(); } renderOutputs(); });
+  });
+
+  var dragging = false;
+  function fromPointer(e){
+    var r = canvas.getBoundingClientRect();
+    var x = Math.min(1, Math.max(0, (e.clientX - r.left)/r.width));
+    var y = Math.min(1, Math.max(0, (e.clientY - r.top)/r.height));
+    target.tiles = 2 + x*58;
+    target.amp = y*0.15;
+    changed(false);
+  }
+  canvas.addEventListener('pointerdown', function(e){ dragging = true; canvas.setPointerCapture(e.pointerId); fromPointer(e); });
+  canvas.addEventListener('pointermove', function(e){ if (dragging) fromPointer(e); });
+  canvas.addEventListener('pointerup', function(){ dragging = false; });
+
+  window.addEventListener('keydown', function(e){
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea') return;
+    if (/^[a-zA-Z]$/.test(e.key)) setLetter(e.key.toUpperCase());
+  });
+
+  var ABC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  function stepLetter(d){ var i = ABC.indexOf(state.letter); setLetter(ABC[(i + d + 26) % 26]); }
+  document.getElementById('prevLetter').addEventListener('click', function(){ stepLetter(-1); });
+  document.getElementById('nextLetter').addEventListener('click', function(){ stepLetter(1); });
+  // iOS Safari only applies :active when a touchstart listener exists
+  document.addEventListener('touchstart', function(){}, { passive:true });
+
+  window.addEventListener('resize', resize);
+  var start = function(){ resize(); syncSliders(); renderOutputs(); if (!reduce.matches) requestAnimationFrame(loop); };
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(start); else start();
+
+  /* ---------- Phone pairing (PeerJS / WebRTC) ---------- */
+  var PREFIX = 'kinetic-type-';
+  var ALPHABET = 'ACDEFHJKMNPRTUVWXY347';   // no look-alikes (0/O, 1/I, 5/S…)
+  var statusEl = document.getElementById('pairStatus');
+  var statusText = document.getElementById('pairStatusText');
+  var roomEl = document.getElementById('roomCode');
+  var qrEl = document.getElementById('qr');
+  var urlEl = document.getElementById('pairUrl');
+  var peer = null, conn = null, lastData = 0, attempts = 0;
+
+  function setStatus(s, text){ statusEl.setAttribute('data-state', s); statusText.textContent = text; }
+
+  function makeCode(){
+    var c = '';
+    var rnd = new Uint32Array(4); crypto.getRandomValues(rnd);
+    for (var i = 0; i < 4; i++) c += ALPHABET[rnd[i] % ALPHABET.length];
+    return c;
+  }
+
+  function controllerUrl(code){
+    var u = new URL('controller.html', location.href);
+    u.search = '?room=' + code;
+    u.hash = '';
+    return u.toString();
+  }
+
+  function showQr(url){
+    if (typeof qrcode !== 'function'){ qrEl.textContent = 'QR unavailable'; return; }
+    var q = qrcode(0, 'M');
+    q.addData(url); q.make();
+    qrEl.innerHTML = q.createSvgTag({ cellSize:4, margin:2, scalable:true });
+  }
+
+  function handle(msg){
+    lastData = Date.now();
+    if (!msg || typeof msg !== 'object') return;
+    if (msg.t === 's'){
+      if (Array.isArray(msg.f1)){ target.tiles = 2 + clamp01(msg.f1[0])*58; target.amp = clamp01(msg.f1[1])*0.15; }
+      if (Array.isArray(msg.f2)){ target.rot = (clamp01(msg.f2[0]) - 0.5) * 120; }
+      if (typeof msg.h === 'number' && isFinite(msg.h)){ target.heading = ((msg.h % 360) + 360) % 360; }
+      if (typeof msg.l === 'string') setLetter(msg.l.toUpperCase());
+      changed(true);
+    }
+  }
+  function clamp01(v){ v = +v; return isFinite(v) ? Math.min(1, Math.max(0, v)) : 0; }
+
+  function host(){
+    if (typeof Peer !== 'function'){ setStatus('error', 'Pairing library did not load. Sliders still work.'); return; }
+    var code = makeCode();
+    roomEl.textContent = code;
+    var url = controllerUrl(code);
+    urlEl.textContent = url; urlEl.href = url;
+    showQr(url);
+    if (location.protocol !== 'https:') setStatus('error', 'Host this page over HTTPS to pair a phone');
+    else setStatus('wait', 'Waiting for a phone');
+
+    peer = new Peer(PREFIX + code.toLowerCase());
+    peer.on('open', function(){ attempts = 0; if (location.protocol === 'https:') setStatus('wait', 'Waiting for a phone'); });
+    peer.on('connection', function(c){
+      if (conn && conn.open) conn.close();   // newest phone takes over
+      conn = c;
+      c.on('open', function(){ lastData = Date.now(); setStatus('live', 'Phone connected'); c.send({ t:'hello', letter: state.letter }); });
+      c.on('data', handle);
+      c.on('close', function(){ if (conn === c){ conn = null; setStatus('wait', 'Phone left. Scan to reconnect'); } });
+      c.on('error', function(){ if (conn === c) setStatus('error', 'Connection dropped. Sliders active'); });
+    });
+    peer.on('disconnected', function(){ try { peer.reconnect(); } catch(e){} });
+    peer.on('error', function(err){
+      if (err && err.type === 'unavailable-id' && attempts++ < 3){ peer.destroy(); host(); return; }
+      setStatus('error', 'Pairing server unreachable. Sliders still work');
+    });
+  }
+
+  // Mobile browsers don't always fire "close"; treat silence as idle
+  setInterval(function(){
+    if (conn && conn.open && Date.now() - lastData > 4000) setStatus('wait', 'Phone idle');
+    else if (conn && conn.open && statusEl.getAttribute('data-state') !== 'live') setStatus('live', 'Phone connected');
+  }, 1000);
+
+  window.addEventListener('pagehide', function(){ if (peer) peer.destroy(); });
+  host();
+})();
+</script>
+
+</body>
+</html>
